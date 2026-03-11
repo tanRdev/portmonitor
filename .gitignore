@@ -1,0 +1,9 @@
+.DS_Store
+.build/
+build/
+.opencode-workflow/
+.agents/
+icon-design.pen
+skills-lock.json
+DerivedData/
+*.dSYM
