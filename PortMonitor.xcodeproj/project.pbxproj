@@ -1,0 +1,419 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0A30EFB38E94230E456A98C8 /* PortMonitorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A456995D8C84DE699BD686A /* PortMonitorApp.swift */; };
+		2B298BD20EAF550A64A1ABE9 /* LsofOutputParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D30AAA620475CB0BA8C533E0 /* LsofOutputParser.swift */; };
+		45279468415E6E1BA7C8F9BD /* ProcessKiller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A372A7B2FE905DC74639E8 /* ProcessKiller.swift */; };
+		47EC89EA96F122B52C23ACE2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 44BAD4ADC9D88A154BC49521 /* Assets.xcassets */; };
+		5D96F6A5BEEBD16461E4EB74 /* MenuBarPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B5AD956BD0CD453B41C7683 /* MenuBarPanel.swift */; };
+		5EE8B30A90DFE768C9E4FCE0 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29E36368039218BAA886FC93 /* HeaderView.swift */; };
+		65E36EFDBDE4218C12330A14 /* BrandAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1DF4B02803BCB96F6CAB0E /* BrandAssets.swift */; };
+		6AE03FC9C517AC0EAF87D142 /* PortListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6608F61E50FF42DF28612CA4 /* PortListView.swift */; };
+		8E2946DBEBE12F4A01965737 /* ErrorBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3042D1033C1CE0D0C249DD3B /* ErrorBannerView.swift */; };
+		A23FDADB26B636F06CE30A5E /* PortScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69BE977CF43986FF0427D972 /* PortScanner.swift */; };
+		B4403A94A58FA3602B9EF766 /* PortListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB45F70298C48A538481884 /* PortListViewModel.swift */; };
+		C131F5FBD952D6C14F2EDB2C /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFD362CBB0BEB9BEF11CCEB3 /* EmptyStateView.swift */; };
+		D1E9F84645BA616B3F354DFC /* LoadingStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBFF03D1D1006760AC661E9 /* LoadingStateView.swift */; };
+		D3696AB2988C5B0012293A7B /* PortInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4DB4C140F936A87AF7B9C4 /* PortInfo.swift */; };
+		DF0CC7E29C7CD346983E63C8 /* CommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B6D9A54B702CC8A4768695 /* CommandRunner.swift */; };
+		DFF6F2D8E28F66B9FE1F9891 /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA43AAC941BB3CAB67040DA4 /* StatusBarController.swift */; };
+		E383703FA143D07D96D3C017 /* PortRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C569A3CA347834A4B87FD6AC /* PortRowView.swift */; };
+		F066449B62C20BD7ED2BB30B /* MenuBarIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = D83FA7AAF424C71BB5104327 /* MenuBarIcon.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		29E36368039218BAA886FC93 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
+		2CBFF03D1D1006760AC661E9 /* LoadingStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingStateView.swift; sourceTree = "<group>"; };
+		3042D1033C1CE0D0C249DD3B /* ErrorBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorBannerView.swift; sourceTree = "<group>"; };
+		44BAD4ADC9D88A154BC49521 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4B4DB4C140F936A87AF7B9C4 /* PortInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortInfo.swift; sourceTree = "<group>"; };
+		6608F61E50FF42DF28612CA4 /* PortListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortListView.swift; sourceTree = "<group>"; };
+		69BE977CF43986FF0427D972 /* PortScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortScanner.swift; sourceTree = "<group>"; };
+		6A456995D8C84DE699BD686A /* PortMonitorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortMonitorApp.swift; sourceTree = "<group>"; };
+		77B6D9A54B702CC8A4768695 /* CommandRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandRunner.swift; sourceTree = "<group>"; };
+		8FB45F70298C48A538481884 /* PortListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortListViewModel.swift; sourceTree = "<group>"; };
+		954D20742E2858ED149A962A /* PortMonitor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PortMonitor.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9B5AD956BD0CD453B41C7683 /* MenuBarPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarPanel.swift; sourceTree = "<group>"; };
+		9F1DF4B02803BCB96F6CAB0E /* BrandAssets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandAssets.swift; sourceTree = "<group>"; };
+		B2A372A7B2FE905DC74639E8 /* ProcessKiller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessKiller.swift; sourceTree = "<group>"; };
+		C569A3CA347834A4B87FD6AC /* PortRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortRowView.swift; sourceTree = "<group>"; };
+		C5F5F8000758DA7CEF485F8E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D30AAA620475CB0BA8C533E0 /* LsofOutputParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LsofOutputParser.swift; sourceTree = "<group>"; };
+		D83FA7AAF424C71BB5104327 /* MenuBarIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MenuBarIcon.png; sourceTree = "<group>"; };
+		DFD362CBB0BEB9BEF11CCEB3 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		FA43AAC941BB3CAB67040DA4 /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0F692173D5F337B6B864F130 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4B4DB4C140F936A87AF7B9C4 /* PortInfo.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		26C392D93DDD841FCAB56F13 = {
+			isa = PBXGroup;
+			children = (
+				3B12E6F7242B9CEE69A24BA6 /* PortMonitor */,
+				D4EC400BF5297617A4495BEB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3B12E6F7242B9CEE69A24BA6 /* PortMonitor */ = {
+			isa = PBXGroup;
+			children = (
+				C5F5F8000758DA7CEF485F8E /* Info.plist */,
+				6A456995D8C84DE699BD686A /* PortMonitorApp.swift */,
+				FA43AAC941BB3CAB67040DA4 /* StatusBarController.swift */,
+				8B0B478581448491CAFE25F1 /* Assets */,
+				0F692173D5F337B6B864F130 /* Models */,
+				C1480162A3002206BE59CD50 /* Services */,
+				E60C714198B57A461FDE44ED /* Support */,
+				66954562B240903BCC94DCE7 /* ViewModels */,
+				7234BA83A696B884CCEFA7F9 /* Views */,
+			);
+			path = PortMonitor;
+			sourceTree = "<group>";
+		};
+		66954562B240903BCC94DCE7 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				8FB45F70298C48A538481884 /* PortListViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		7234BA83A696B884CCEFA7F9 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				DFD362CBB0BEB9BEF11CCEB3 /* EmptyStateView.swift */,
+				3042D1033C1CE0D0C249DD3B /* ErrorBannerView.swift */,
+				29E36368039218BAA886FC93 /* HeaderView.swift */,
+				2CBFF03D1D1006760AC661E9 /* LoadingStateView.swift */,
+				6608F61E50FF42DF28612CA4 /* PortListView.swift */,
+				C569A3CA347834A4B87FD6AC /* PortRowView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		8B0B478581448491CAFE25F1 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				44BAD4ADC9D88A154BC49521 /* Assets.xcassets */,
+				D83FA7AAF424C71BB5104327 /* MenuBarIcon.png */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		C1480162A3002206BE59CD50 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				77B6D9A54B702CC8A4768695 /* CommandRunner.swift */,
+				D30AAA620475CB0BA8C533E0 /* LsofOutputParser.swift */,
+				69BE977CF43986FF0427D972 /* PortScanner.swift */,
+				B2A372A7B2FE905DC74639E8 /* ProcessKiller.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		D4EC400BF5297617A4495BEB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				954D20742E2858ED149A962A /* PortMonitor.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E60C714198B57A461FDE44ED /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				9F1DF4B02803BCB96F6CAB0E /* BrandAssets.swift */,
+				9B5AD956BD0CD453B41C7683 /* MenuBarPanel.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		922BC02235A5859C7E314391 /* PortMonitor */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 76A8387AFA8CE4EA4A67858D /* Build configuration list for PBXNativeTarget "PortMonitor" */;
+			buildPhases = (
+				912497B3CE1B24587F5896C3 /* Sources */,
+				32381F05EF22D444B6CF8D07 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PortMonitor;
+			packageProductDependencies = (
+			);
+			productName = PortMonitor;
+			productReference = 954D20742E2858ED149A962A /* PortMonitor.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2D455DD9EE09A0F76F3FBDE5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 584D7AFAC792E09D913401D4 /* Build configuration list for PBXProject "PortMonitor" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 26C392D93DDD841FCAB56F13;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D4EC400BF5297617A4495BEB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				922BC02235A5859C7E314391 /* PortMonitor */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		32381F05EF22D444B6CF8D07 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47EC89EA96F122B52C23ACE2 /* Assets.xcassets in Resources */,
+				F066449B62C20BD7ED2BB30B /* MenuBarIcon.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		912497B3CE1B24587F5896C3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65E36EFDBDE4218C12330A14 /* BrandAssets.swift in Sources */,
+				DF0CC7E29C7CD346983E63C8 /* CommandRunner.swift in Sources */,
+				C131F5FBD952D6C14F2EDB2C /* EmptyStateView.swift in Sources */,
+				8E2946DBEBE12F4A01965737 /* ErrorBannerView.swift in Sources */,
+				5EE8B30A90DFE768C9E4FCE0 /* HeaderView.swift in Sources */,
+				D1E9F84645BA616B3F354DFC /* LoadingStateView.swift in Sources */,
+				2B298BD20EAF550A64A1ABE9 /* LsofOutputParser.swift in Sources */,
+				5D96F6A5BEEBD16461E4EB74 /* MenuBarPanel.swift in Sources */,
+				D3696AB2988C5B0012293A7B /* PortInfo.swift in Sources */,
+				6AE03FC9C517AC0EAF87D142 /* PortListView.swift in Sources */,
+				B4403A94A58FA3602B9EF766 /* PortListViewModel.swift in Sources */,
+				0A30EFB38E94230E456A98C8 /* PortMonitorApp.swift in Sources */,
+				E383703FA143D07D96D3C017 /* PortRowView.swift in Sources */,
+				A23FDADB26B636F06CE30A5E /* PortScanner.swift in Sources */,
+				45279468415E6E1BA7C8F9BD /* ProcessKiller.swift in Sources */,
+				DFF6F2D8E28F66B9FE1F9891 /* StatusBarController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		59643D2012829D43F0EDD3A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		887B54B7F30F187142028886 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		913F03B96171D7DB787623EF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PortMonitor/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.portmonitor.app;
+				PRODUCT_NAME = "Port Monitor";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		9AC376FB279A6159CDE909DC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PortMonitor/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.portmonitor.app;
+				PRODUCT_NAME = "Port Monitor";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		584D7AFAC792E09D913401D4 /* Build configuration list for PBXProject "PortMonitor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				59643D2012829D43F0EDD3A2 /* Debug */,
+				887B54B7F30F187142028886 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		76A8387AFA8CE4EA4A67858D /* Build configuration list for PBXNativeTarget "PortMonitor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9AC376FB279A6159CDE909DC /* Debug */,
+				913F03B96171D7DB787623EF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2D455DD9EE09A0F76F3FBDE5 /* Project object */;
+}
