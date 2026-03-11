@@ -4,28 +4,25 @@
 
   # Port Monitor
 
-  A small macOS menu bar app that shows listening ports, the processes behind them, and lets you stop them without leaving the menu bar.
+  A small macOS menu bar app that shows which local ports are listening, which process owns them, and lets you kill that process without leaving the menu bar.
 
-  [Installation](#installation) • [Releases](#releases) • [Build from source](#build-from-source) • [Usage](#usage)
+  [Download](#download) · [What it does](#what-it-does) · [Build from source](#build-from-source) · [Usage](#usage)
 
 </div>
 
-## Overview
+## Why port monitor
 
-Port Monitor sits in the macOS menu bar and keeps a live view of local listening TCP ports. It is built for quick checks: open the menu, see what is bound, and stop a process when you need to free a port.
+Port Monitor is for the familiar "what is using this port?" moment. Click the menu bar icon, see the current TCP listeners, and stop the one you do not need anymore.
 
-## Features
+## What it does
 
-- Menu bar only, with no dock icon
-- Lists active listening TCP ports and process names
-- Lets you stop a process directly from the menu
-- Refreshes automatically every 3 seconds
-- Uses native SwiftUI and AppKit macOS UI
-- Covers loading, empty, populated, and error states
+- Shows active listening TCP ports
+- Lists the process name and PID for each port
+- Lets you kill a process right from the menu
+- Runs as a menu-bar-only app, so it stays out of the Dock
+- Ships as a universal build for Apple Silicon and Intel Macs
 
-## Installation
-
-### Download the app
+## Download
 
 1. Open the [latest release](https://github.com/tanRdev/portmonitor/releases/latest).
 2. Download `PortMonitor.dmg` from the release assets.
@@ -33,27 +30,20 @@ Port Monitor sits in the macOS menu bar and keeps a live view of local listening
 4. Launch the app from Applications.
 
 > [!NOTE]
-> The app targets macOS 26 or later.
+> Port Monitor currently targets macOS 26 or later.
 
 > [!IMPORTANT]
-> Release automation currently publishes convenience builds. If Gatekeeper warns on first launch, open the app from Finder with **Open** or build locally until signing and notarization are added.
-
-## Releases
-
-Release builds include a DMG installer so you can install Port Monitor without building it yourself.
-
-- Browse all releases: [github.com/tanRdev/portmonitor/releases](https://github.com/tanRdev/portmonitor/releases)
-- Latest DMG: [github.com/tanRdev/portmonitor/releases/latest](https://github.com/tanRdev/portmonitor/releases/latest)
+> Release builds are convenience builds for now. The app is not signed or notarized yet, so macOS Gatekeeper may warn on first launch. If that happens, open the app from Finder with **Open**, or build it locally.
 
 ## Build from source
 
 ### Requirements
 
 - macOS 26+
-- Xcode 26 or current Apple developer tools that include Swift 6.2+
+- Xcode 26 or Apple developer tools with Swift 6.2+
 - `iconutil` (included with macOS)
 
-### Build steps
+### Build commands
 
 ```bash
 # Run tests
@@ -62,51 +52,41 @@ swift test --build-path /tmp/portmonitor-spm --disable-experimental-prebuilts -j
 # Build the app bundle
 ./scripts/build.sh
 
-# Create the DMG installer
+# Package a DMG
 ./scripts/create-dmg.sh
 ```
 
-Artifacts are written to `build/`:
+Artifacts end up in `build/`:
 
 - `build/PortMonitor.app`
 - `build/PortMonitor.dmg`
+
+## How it works
+
+Port Monitor uses `lsof -nP -iTCP -sTCP:LISTEN -FpcnT` to find local listening TCP ports. It parses that output, turns it into app models, and shows the results in a menu bar UI. From there you can refresh the list, see which process owns a port, and kill it when you need to free something up.
 
 ## Usage
 
 1. Launch Port Monitor.
 2. Click the menu bar icon.
-3. Review the list of listening ports.
+3. Review the current listening ports.
 4. Click **Kill** next to a process you want to stop.
 5. Use the power button to quit the app.
 
-## Architecture
+## Project layout
 
-- **SwiftUI** for the popover interface
-- **AppKit** for the status item and floating panel
-- **lsof** for machine-readable port discovery
-- **kill** for process termination with `TERM` then `KILL` fallback
-- **Swift Testing** for parser, command-runner, layout, and view-model coverage
-
-## Project structure
-
-```text
+```
 PortMonitor/
-├── PortMonitor/
-│   ├── PortMonitorApp.swift
-│   ├── StatusBarController.swift
-│   ├── Models/
-│   ├── Services/
-│   ├── Support/
-│   ├── ViewModels/
-│   ├── Views/
-│   └── Assets/
-├── Tests/PortMonitorTests/
-├── scripts/
-└── assets/icons/
+├── PortMonitor/              # App entry point, UI, services, models
+├── Tests/PortMonitorTests/   # Parsing, command runner, view model tests
+├── scripts/                  # Build, packaging, and icon tooling
+├── assets/icons/             # Source artwork and exported icons
+├── Package.swift             # Swift Package Manager setup
+└── project.yml               # XcodeGen project definition
 ```
 
-## Notes
+## Development notes
 
-- Port discovery uses `lsof -nP -iTCP -sTCP:LISTEN -FpcnT`.
-- The app uses `LSUIElement` so it stays out of the dock.
-- Release packaging builds separate Apple Silicon and Intel binaries, then merges them into one universal app executable.
+- The app is a menu-bar-only macOS app via `LSUIElement`.
+- Release automation builds and publishes a DMG from GitHub Actions.
+- The packaged app is built as a universal binary for Apple Silicon and Intel Macs.
