@@ -16,10 +16,14 @@ enum BrandAssets {
     }
 
     static func glyphImage() -> NSImage? {
-        if let url = Bundle.main.url(forResource: "MenuBarIcon", withExtension: "png") {
-            return NSImage(contentsOf: url)
+        if let url = Bundle.main.url(forResource: "MenuBarIcon", withExtension: "png"),
+           let image = NSImage(contentsOf: url) {
+            image.isTemplate = true
+            return image
         }
 
-        return NSImage(systemSymbolName: "square.grid.3x3.fill", accessibilityDescription: "Port Monitor")
+        let fallback = NSImage(systemSymbolName: "square.grid.3x3.fill", accessibilityDescription: "Port Monitor")
+        fallback?.isTemplate = true
+        return fallback
     }
 }

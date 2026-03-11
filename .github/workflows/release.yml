@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-release:
+    runs-on: macos-26
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Show toolchain versions
+        run: |
+          swift --version
+          xcodebuild -version
+
+      - name: Run tests
+        run: swift test --build-path /tmp/portmonitor-spm --disable-experimental-prebuilts -j 2
+
+      - name: Build app bundle
+        run: ./scripts/build.sh
+
+      - name: Build DMG
+        run: ./scripts/create-dmg.sh
+
+      - name: Upload DMG as workflow artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: PortMonitor-dmg
+          path: build/PortMonitor.dmg
+
+      - name: Publish GitHub release asset
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@6cbd405e2c4e67a21c47fa9e383d020e4e28b836 # v2.3.3
+        with:
+          files: build/PortMonitor.dmg
+          generate_release_notes: true
+          append_body: true
+          body: |
+            > [!IMPORTANT]
+            > This DMG is currently a convenience build. It is not signed or notarized yet, so macOS Gatekeeper may warn on first launch.

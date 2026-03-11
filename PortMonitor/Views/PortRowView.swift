@@ -42,12 +42,14 @@ struct PortRowView: View {
                     .accessibilityLabel("Kill process on port \(port.port)")
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 10)
         .padding(.vertical, 7)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(isHovered ? Color.primary.opacity(0.08) : Color.clear)
         )
+        .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .onHover { hovering in
             withAnimation(.easeInOut(duration: 0.15)) {
                 isHovered = hovering

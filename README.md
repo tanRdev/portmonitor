@@ -1,109 +1,112 @@
-# Port Monitor
+<div align="center">
 
-A minimal macOS menu bar app for monitoring and managing listening ports.
+  <img src="./assets/icons/port-grid/port-grid-readme.svg" alt="Port Monitor logo" width="96" />
+
+  # Port Monitor
+
+  A small macOS menu bar app that shows listening ports, the processes behind them, and lets you stop them without leaving the menu bar.
+
+  [Installation](#installation) • [Releases](#releases) • [Build from source](#build-from-source) • [Usage](#usage)
+
+</div>
+
+## Overview
+
+Port Monitor sits in the macOS menu bar and keeps a live view of local listening TCP ports. It is built for quick checks: open the menu, see what is bound, and stop a process when you need to free a port.
 
 ## Features
 
-- Lives in the menu bar, no dock icon
-- Shows active listening TCP ports
-- Displays process names
-- Kill processes from compact utility rows
-- Native macOS Liquid Glass popover styling
-- Auto-refreshes every 3 seconds
+- Menu bar only, with no dock icon
+- Lists active listening TCP ports and process names
+- Lets you stop a process directly from the menu
+- Refreshes automatically every 3 seconds
+- Uses native SwiftUI and AppKit macOS UI
+- Covers loading, empty, populated, and error states
 
-## Requirements
+## Installation
 
-- macOS 26.0+
-- Xcode 26.0+ (for building)
-- xcodegen (optional, for project generation)
+### Download the app
 
-## Building
+1. Open the [latest release](https://github.com/tanRdev/portmonitor/releases/latest).
+2. Download `PortMonitor.dmg` from the release assets.
+3. Open the DMG and drag **Port Monitor** into **Applications**.
+4. Launch the app from Applications.
 
-### Prerequisites
+> [!NOTE]
+> The app targets macOS 26 or later.
 
-- macOS with Apple Command Line Tools installed
-- `iconutil` available (ships with macOS)
+> [!IMPORTANT]
+> Release automation currently publishes convenience builds. If Gatekeeper warns on first launch, open the app from Finder with **Open** or build locally until signing and notarization are added.
 
-### Build Steps
+## Releases
+
+Release builds include a DMG installer so you can install Port Monitor without building it yourself.
+
+- Browse all releases: [github.com/tanRdev/portmonitor/releases](https://github.com/tanRdev/portmonitor/releases)
+- Latest DMG: [github.com/tanRdev/portmonitor/releases/latest](https://github.com/tanRdev/portmonitor/releases/latest)
+
+## Build from source
+
+### Requirements
+
+- macOS 26+
+- Xcode 26 or current Apple developer tools that include Swift 6.2+
+- `iconutil` (included with macOS)
+
+### Build steps
 
 ```bash
-# Run the automated tests
-swift test -j 2
+# Run tests
+swift test --build-path /tmp/portmonitor-spm --disable-experimental-prebuilts -j 2
 
-# Build the release app bundle
+# Build the app bundle
 ./scripts/build.sh
-```
 
-This produces:
-
-- `build/PortMonitor.app`
-
-The build uses Swift Package Manager for compilation and then assembles a native macOS `.app` bundle with the included menu bar asset and generated `.icns` app icon.
-
-## Packaging
-
-```bash
-# Create DMG installer
+# Create the DMG installer
 ./scripts/create-dmg.sh
 ```
 
-This produces:
+Artifacts are written to `build/`:
 
+- `build/PortMonitor.app`
 - `build/PortMonitor.dmg`
 
 ## Usage
 
-1. Launch Port Monitor
-2. Click the Port Monitor icon in the menu bar
-3. View active ports
-4. Click **Kill** next to any listening port you want to terminate
-5. Click the power button to quit
+1. Launch Port Monitor.
+2. Click the menu bar icon.
+3. Review the list of listening ports.
+4. Click **Kill** next to a process you want to stop.
+5. Use the power button to quit the app.
 
 ## Architecture
 
-- **SwiftUI**: Popover UI and menu content
-- **AppKit**: Status bar integration (`NSStatusItem`, floating `NSPanel`)
-- **lsof**: Port discovery via machine-readable command output
-- **kill**: Process termination with graceful fallback from `TERM` to `KILL`
-- **Swift Testing**: Deterministic parser, killer, and view-model tests
+- **SwiftUI** for the popover interface
+- **AppKit** for the status item and floating panel
+- **lsof** for machine-readable port discovery
+- **kill** for process termination with `TERM` then `KILL` fallback
+- **Swift Testing** for parser, command-runner, layout, and view-model coverage
 
-## Project Structure
+## Project structure
 
-```
+```text
 PortMonitor/
 ├── PortMonitor/
-│   ├── PortMonitorApp.swift           # App entry point
-│   ├── StatusBarController.swift      # NSStatusItem + floating panel
-│   ├── Services/
-│   │   ├── PortScanner.swift          # lsof-based port detection
-│   │   └── ProcessKiller.swift        # kill command wrapper
-│   ├── ViewModels/
-│   │   └── PortListViewModel.swift    # ObservableObject for UI state
-│   ├── Views/
-│   │   ├── PortListView.swift         # Main dropdown content
-│   │   ├── PortRowView.swift          # Individual port row
-│   │   ├── EmptyStateView.swift       # No ports running state
-│   │   └── HeaderView.swift           # App title + quit button
+│   ├── PortMonitorApp.swift
+│   ├── StatusBarController.swift
 │   ├── Models/
-│   │   └── PortInfo.swift             # Port data model
+│   ├── Services/
+│   ├── Support/
+│   ├── ViewModels/
+│   ├── Views/
 │   └── Assets/
-│       └── Assets.xcassets/           # App icons
+├── Tests/PortMonitorTests/
 ├── scripts/
-│   ├── build.sh                       # Build script
-│   └── create-dmg.sh                  # DMG packaging
-└── project.yml                        # xcodegen configuration
+└── assets/icons/
 ```
 
-## Implementation Notes
+## Notes
 
-1. **No Dock Icon**: Uses `LSUIElement` and `setActivationPolicy(.accessory)`
-2. **Native Liquid Glass UI**: Uses an arrowless floating panel with SwiftUI Liquid Glass surfaces and controls
-3. **Port Detection**: Uses `lsof -nP -iTCP -sTCP:LISTEN -FpcnT` for stable parsing
-4. **Process Killing**: Attempts `TERM` first and falls back to `KILL` when appropriate
-5. **Auto-refresh**: 3-second timer with explicit refresh on successful kill actions
-6. **States Covered**: Loading, empty, populated, and error states are all rendered in the popover
-7. **Canonical Verification Command**: `swift test -j 2`
-
-## License
-
-MIT
+- Port discovery uses `lsof -nP -iTCP -sTCP:LISTEN -FpcnT`.
+- The app uses `LSUIElement` so it stays out of the dock.
+- Release packaging builds separate Apple Silicon and Intel binaries, then merges them into one universal app executable.

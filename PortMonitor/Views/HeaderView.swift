@@ -10,6 +10,7 @@ struct HeaderView: View {
                 if let glyph = BrandAssets.glyphImage() {
                     Image(nsImage: glyph)
                         .resizable()
+                        .renderingMode(.template)
                         .interpolation(.high)
                 } else {
                     Image(systemName: "square.grid.3x3.fill")
@@ -18,7 +19,7 @@ struct HeaderView: View {
                 }
             }
             .frame(width: 14, height: 14)
-            .foregroundStyle(.primary)
+            .foregroundStyle(.white)
             .padding(.top, 1)
 
             VStack(alignment: .leading, spacing: 2) {

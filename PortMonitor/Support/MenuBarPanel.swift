@@ -49,6 +49,7 @@ enum MenuBarPanelPositioning {
 enum StatusItemButtonStyle {
     static func apply(to button: NSButton, highlighted: Bool) {
         button.wantsLayer = true
+        button.contentTintColor = .white
         button.layer?.cornerRadius = 7
         button.layer?.masksToBounds = true
         button.layer?.backgroundColor = highlighted

@@ -6,6 +6,23 @@ import Testing
 @MainActor
 struct ViewLayoutTests {
     @Test
+    func brandGlyphFallbackUsesTemplateImage() {
+        let glyph = BrandAssets.glyphImage()
+
+        #expect(glyph != nil)
+        #expect(glyph?.isTemplate == true)
+    }
+
+    @Test
+    func menuBarIconUsesTemplateImageAndExpectedSize() {
+        let icon = BrandAssets.menuBarIcon()
+
+        #expect(icon != nil)
+        #expect(icon?.isTemplate == true)
+        #expect(icon?.size == NSSize(width: 18, height: 18))
+    }
+
+    @Test
     func menuBarPanelUsesArrowlessFloatingConfiguration() {
         let panel = MenuBarPanel.make(contentRect: NSRect(x: 0, y: 0, width: 332, height: 360))
 
@@ -36,6 +53,7 @@ struct ViewLayoutTests {
         #expect(button.wantsLayer)
         #expect(button.layer?.cornerRadius == 7)
         #expect(button.layer?.backgroundColor != nil)
+        #expect(button.contentTintColor == .white)
 
         StatusItemButtonStyle.apply(to: button, highlighted: false)
 
@@ -80,6 +98,15 @@ struct ViewLayoutTests {
         )
 
         #expect(height <= 40)
+    }
+
+    @Test
+    func portRowDefinesFullWidthHoverHitArea() {
+        let port = PortInfo(port: 3000, processName: "node", pid: 41446, protocolType: "TCP")
+        let description = String(reflecting: PortRowView(port: port, isKilling: false, onKill: {}).body)
+
+        #expect(description.contains("ContentShape"))
+        #expect(description.contains("maxWidth"))
     }
 
     @Test

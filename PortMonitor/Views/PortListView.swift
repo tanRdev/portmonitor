@@ -21,7 +21,7 @@ struct PortListView: View {
                     EmptyStateView(lastUpdatedAt: viewModel.lastUpdatedAt)
                 } else {
                     ScrollView {
-                        LazyVStack(spacing: 4) {
+                        LazyVStack(alignment: .leading, spacing: 4) {
                             ForEach(viewModel.ports) { port in
                                 PortRowView(
                                     port: port,
@@ -34,6 +34,7 @@ struct PortListView: View {
                                 )
                             }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.vertical, 1)
                     }
                     .frame(maxHeight: 300)

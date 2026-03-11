@@ -7,7 +7,13 @@ APP_PATH="$BUILD_DIR/$PROJECT_NAME.app"
 CONTENTS_PATH="$APP_PATH/Contents"
 MACOS_PATH="$CONTENTS_PATH/MacOS"
 RESOURCES_PATH="$CONTENTS_PATH/Resources"
-BIN_PATH=$(swift build -c release --show-bin-path)
+ARM64_BUILD_PATH="$BUILD_DIR/swiftpm-arm64"
+X86_64_BUILD_PATH="$BUILD_DIR/swiftpm-x86_64"
+VERSION=${VERSION:-${GITHUB_REF_NAME:-1.0.0}}
+
+if [[ "$VERSION" == v* ]]; then
+    VERSION="${VERSION#v}"
+fi
 
 echo "Building $PROJECT_NAME..."
 
@@ -15,15 +21,21 @@ echo "Building $PROJECT_NAME..."
 rm -rf "$BUILD_DIR"
 mkdir -p "$MACOS_PATH" "$RESOURCES_PATH"
 
-# Build with Swift Package Manager
-swift build -c release -j 2
+# Build separate binaries for Apple Silicon and Intel, then merge them
+swift build -c release --arch arm64 --build-path "$ARM64_BUILD_PATH" -j 2
+swift build -c release --arch x86_64 --build-path "$X86_64_BUILD_PATH" -j 2
 
-# Copy executable
-EXECUTABLE_SOURCE="$BIN_PATH/$PROJECT_NAME"
-cp "$EXECUTABLE_SOURCE" "$MACOS_PATH/$PROJECT_NAME"
+ARM64_BIN_PATH=$(swift build -c release --arch arm64 --build-path "$ARM64_BUILD_PATH" --show-bin-path)
+X86_64_BIN_PATH=$(swift build -c release --arch x86_64 --build-path "$X86_64_BUILD_PATH" --show-bin-path)
+
+# Create a universal executable
+lipo -create \
+    "$ARM64_BIN_PATH/$PROJECT_NAME" \
+    "$X86_64_BIN_PATH/$PROJECT_NAME" \
+    -output "$MACOS_PATH/$PROJECT_NAME"
 
 # Create Info.plist
-cat > "$CONTENTS_PATH/Info.plist" << 'EOF'
+cat > "$CONTENTS_PATH/Info.plist" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -39,9 +51,9 @@ cat > "$CONTENTS_PATH/Info.plist" << 'EOF'
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundleVersion</key>
-    <string>1.0.0</string>
+    <string>$VERSION</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0.0</string>
+    <string>$VERSION</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleExecutable</key>
@@ -55,7 +67,9 @@ cat > "$CONTENTS_PATH/Info.plist" << 'EOF'
 EOF
 
 # Copy runtime resources
-if [ -f "PortMonitor/Assets/MenuBarIcon.png" ]; then
+if [ -f "assets/icons/port-grid/port-grid-tray-44.png" ]; then
+    cp "assets/icons/port-grid/port-grid-tray-44.png" "$RESOURCES_PATH/MenuBarIcon.png"
+elif [ -f "PortMonitor/Assets/MenuBarIcon.png" ]; then
     cp "PortMonitor/Assets/MenuBarIcon.png" "$RESOURCES_PATH/MenuBarIcon.png"
 fi
 
