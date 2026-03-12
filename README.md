@@ -61,6 +61,11 @@ Artifacts end up in `build/`:
 - `build/PortMonitor.app`
 - `build/PortMonitor.dmg`
 
+## Release process
+
+- Pushes to `main` and pull requests to `main` run CI, test the app, build the app bundle, package the DMG, and upload both as workflow artifacts.
+- Pushing a version tag like `v1.0.1` publishes a GitHub release and attaches `PortMonitor.dmg` automatically.
+
 ## How it works
 
 Port Monitor uses `lsof -nP -iTCP -sTCP:LISTEN -FpcnT` to find local listening TCP ports. It parses that output, turns it into app models, and shows the results in a menu bar UI. From there you can refresh the list, see which process owns a port, and kill it when you need to free something up.
@@ -88,5 +93,5 @@ PortMonitor/
 ## Development notes
 
 - The app is a menu-bar-only macOS app via `LSUIElement`.
-- Release automation builds and publishes a DMG from GitHub Actions.
+- CI validates pushes and pull requests, and release automation publishes a DMG from GitHub Actions when a `v*` tag is pushed.
 - The packaged app is built as a universal binary for Apple Silicon and Intel Macs.
