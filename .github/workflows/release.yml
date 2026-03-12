@@ -42,7 +42,6 @@ jobs:
         with:
           files: build/PortMonitor.dmg
           generate_release_notes: true
-          append_body: true
           body: |
             > [!IMPORTANT]
             > This DMG is currently a convenience build. It is not signed or notarized yet, so macOS Gatekeeper may warn on first launch.
