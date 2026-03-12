@@ -24,7 +24,7 @@ Port Monitor is for the familiar "what is using this port?" moment. Click the me
 
 ## Download
 
-1. Open the [latest release](https://github.com/tanRdev/portmonitor/releases/latest).
+1. Open the [releases page](https://github.com/tanRdev/portmonitor/releases).
 2. Download `PortMonitor.dmg` from the release assets.
 3. Open the DMG and drag **Port Monitor** into **Applications**.
 4. Launch the app from Applications.
