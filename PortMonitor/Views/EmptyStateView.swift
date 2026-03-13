@@ -6,15 +6,15 @@ struct EmptyStateView: View {
     @State private var isAnimating = false
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 12) {
             // Animated illustration
             ZStack {
                 Circle()
                     .fill(.white.opacity(0.08))
-                    .frame(width: 64, height: 64)
+                    .frame(width: 56, height: 56)
 
                 Image(systemName: "circle.grid.2x2")
-                    .font(.system(size: 28, weight: .medium))
+                    .font(.system(size: 24, weight: .medium))
                     .foregroundStyle(.secondary)
                     .symbolRenderingMode(.hierarchical)
                     .rotationEffect(.degrees(isAnimating ? 360 : 0))
@@ -22,13 +22,13 @@ struct EmptyStateView: View {
 
             VStack(spacing: 6) {
                 Text("No listening ports")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold))
 
                 Text("Start a local server and it will appear here automatically.")
-                    .font(.system(size: 12, weight: .regular))
+                    .font(.system(size: 11, weight: .regular))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
-                    .frame(maxWidth: 240)
+                    .frame(maxWidth: 220)
             }
 
             if let lastUpdatedAt {
@@ -43,8 +43,9 @@ struct EmptyStateView: View {
                 .padding(.top, 4)
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 120)
-        .padding(.vertical, 16)
+        // Keep the empty state compact for menu bar utility use
+        .frame(maxWidth: .infinity, minHeight: 84)
+        .padding(.vertical, 8)
         .onAppear {
             withAnimation(.linear(duration: 20).repeatForever(autoreverses: false)) {
                 isAnimating = true

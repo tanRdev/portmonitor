@@ -4,7 +4,8 @@ enum BrandAssets {
     static func menuBarIcon() -> NSImage? {
         if let url = Bundle.main.url(forResource: "MenuBarIcon", withExtension: "png"),
            let image = NSImage(contentsOf: url) {
-            image.isTemplate = false  // Icon is already white
+            // Use a template image for menu bar so the system can tint it appropriately.
+            image.isTemplate = true
             image.size = NSSize(width: 18, height: 18)
             return image
         }
@@ -17,10 +18,10 @@ enum BrandAssets {
             return nil
         }
 
-        let whiteConfig = NSImage.SymbolConfiguration(paletteColors: [.white])
-            .applying(.init(pointSize: 18, weight: .medium))
-
-        let configuredImage = fallback.withSymbolConfiguration(whiteConfig)
+        // Return a template symbol sized for the menu bar.
+        let config = NSImage.SymbolConfiguration(pointSize: 18, weight: .medium)
+        let configuredImage = fallback.withSymbolConfiguration(config)
+        configuredImage?.isTemplate = true
         configuredImage?.size = NSSize(width: 18, height: 18)
         return configuredImage
     }

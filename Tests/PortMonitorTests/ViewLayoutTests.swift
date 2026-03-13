@@ -19,7 +19,7 @@ struct ViewLayoutTests {
 
         #expect(icon != nil)
         #expect(icon?.isTemplate == true)
-        #expect(icon?.size == NSSize(width: 20, height: 20))
+        #expect(icon?.size == NSSize(width: 18, height: 18))
     }
 
     @Test
@@ -45,14 +45,14 @@ struct ViewLayoutTests {
     }
 
     @Test
-    func statusItemHighlightAppliesBackgroundTint() {
+    func statusItemHighlightKeepsMinimalChrome() {
         let button = NSButton(frame: NSRect(x: 0, y: 0, width: 28, height: 28))
 
         StatusItemButtonStyle.apply(to: button, highlighted: true)
 
         #expect(button.wantsLayer)
         #expect(button.layer?.cornerRadius == 8)
-        #expect(button.layer?.backgroundColor != nil)
+        #expect(button.layer?.backgroundColor == nil)
         #expect(button.contentTintColor == .white)
 
         StatusItemButtonStyle.apply(to: button, highlighted: false)

@@ -42,8 +42,9 @@ struct PortRowView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        // Slightly reduce vertical padding to meet compact menu bar row height
         .padding(.horizontal, 12)
-        .padding(.vertical, 10)
+        .padding(.vertical, 8)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(isHovered ? Color.primary.opacity(0.06) : Color.clear)
