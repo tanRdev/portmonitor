@@ -19,7 +19,7 @@ struct ViewLayoutTests {
 
         #expect(icon != nil)
         #expect(icon?.isTemplate == true)
-        #expect(icon?.size == NSSize(width: 18, height: 18))
+        #expect(icon?.size == NSSize(width: 20, height: 20))
     }
 
     @Test
@@ -37,11 +37,11 @@ struct ViewLayoutTests {
     func menuBarPanelOriginCentersUnderStatusItem() {
         let origin = MenuBarPanelPositioning.origin(
             buttonFrame: NSRect(x: 700, y: 900, width: 28, height: 22),
-            panelSize: NSSize(width: 332, height: 340),
+            panelSize: NSSize(width: 340, height: 360),
             visibleFrame: NSRect(x: 0, y: 0, width: 1440, height: 900)
         )
 
-        #expect(origin.x == 548.0)
+        #expect(origin.x == 544.0)
     }
 
     @Test
@@ -51,7 +51,7 @@ struct ViewLayoutTests {
         StatusItemButtonStyle.apply(to: button, highlighted: true)
 
         #expect(button.wantsLayer)
-        #expect(button.layer?.cornerRadius == 7)
+        #expect(button.layer?.cornerRadius == 8)
         #expect(button.layer?.backgroundColor != nil)
         #expect(button.contentTintColor == .white)
 

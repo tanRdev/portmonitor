@@ -31,7 +31,7 @@ final class MenuBarPanel: NSPanel {
 enum MenuBarPanelPositioning {
     static func origin(buttonFrame: NSRect, panelSize: NSSize, visibleFrame: NSRect) -> NSPoint {
         let horizontalPadding: CGFloat = 8
-        let verticalOffset: CGFloat = 6
+        let verticalOffset: CGFloat = 8
         let centeredX = buttonFrame.midX - (panelSize.width / 2)
         let clampedX = min(
             max(visibleFrame.minX + horizontalPadding, centeredX),
@@ -50,10 +50,14 @@ enum StatusItemButtonStyle {
     static func apply(to button: NSButton, highlighted: Bool) {
         button.wantsLayer = true
         button.contentTintColor = .white
-        button.layer?.cornerRadius = 7
+        button.layer?.cornerRadius = 8
+        button.layer?.cornerCurve = .continuous
         button.layer?.masksToBounds = true
-        button.layer?.backgroundColor = highlighted
-            ? NSColor.selectedContentBackgroundColor.withAlphaComponent(0.28).cgColor
-            : nil
+
+        if highlighted {
+            button.layer?.backgroundColor = nil
+        } else {
+            button.layer?.backgroundColor = nil
+        }
     }
 }

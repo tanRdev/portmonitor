@@ -4,46 +4,60 @@ struct HeaderView: View {
     let portCount: Int
     let onQuit: () -> Void
 
+    @State private var isQuitHovered = false
+
     var body: some View {
-        HStack(alignment: .center, spacing: 8) {
-            Group {
-                if let glyph = BrandAssets.glyphImage() {
-                    Image(nsImage: glyph)
-                        .resizable()
-                        .renderingMode(.template)
-                        .interpolation(.high)
-                } else {
-                    Image(systemName: "square.grid.3x3.fill")
-                        .resizable()
-                        .scaledToFit()
+        HStack(alignment: .center, spacing: 12) {
+            // App icon
+            ZStack {
+                Group {
+                    if let glyph = BrandAssets.glyphImage() {
+                        Image(nsImage: glyph)
+                            .resizable()
+                            .renderingMode(.template)
+                            .interpolation(.high)
+                    } else {
+                        Image(systemName: "square.grid.3x3.fill")
+                            .resizable()
+                            .scaledToFit()
+                    }
                 }
+                .frame(width: 16, height: 16)
+                .foregroundStyle(.white)
             }
-            .frame(width: 14, height: 14)
-            .foregroundStyle(.white)
-            .padding(.top, 1)
 
             VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 6) {
-                    Text("Port Monitor")
-                        .font(.system(size: 13, weight: .medium))
+                Text("Port Monitor")
+                    .font(.system(size: 14, weight: .semibold))
 
-                    Text(portCountLabel)
-                        .font(.system(size: 11, weight: .regular))
-                        .foregroundStyle(.secondary)
-                }
+                Text(portCountLabel)
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundStyle(.secondary)
             }
 
             Spacer()
 
+            // Quit button with improved styling and hit target
             Button(action: onQuit) {
                 Image(systemName: "power")
-                    .font(.system(size: 11, weight: .medium))
-                    .frame(width: 18, height: 18)
+                    .font(.system(size: 12, weight: .medium))
+                    .frame(width: 28, height: 28)
+                    .background(
+                        Circle()
+                            .fill(isQuitHovered ? Color.red.opacity(0.15) : .clear)
+                    )
+                    .contentShape(Circle())
             }
             .buttonStyle(.plain)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(isQuitHovered ? .red : .secondary)
             .accessibilityLabel("Quit Port Monitor")
+            .onHover { hovering in
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    isQuitHovered = hovering
+                }
+            }
         }
+        .frame(height: 44)
     }
 
     private var portCountLabel: String {

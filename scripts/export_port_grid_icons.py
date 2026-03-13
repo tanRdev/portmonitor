@@ -88,7 +88,8 @@ def draw_tray_icon(size: int, simplify_threshold: int = 24) -> str:
     img = Image.new("RGBA", (size, size), (255, 255, 255, 0))
     draw = ImageDraw.Draw(img)
 
-    glyph_fill = (0, 0, 0, 255)
+    # WHITE glyph for menu bar (not black - macOS dark mode needs white)
+    glyph_fill = (255, 255, 255, 255)
 
     if size < simplify_threshold:
         # produce a simplified 2x2 grid for tiny sizes

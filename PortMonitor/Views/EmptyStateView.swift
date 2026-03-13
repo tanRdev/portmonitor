@@ -3,22 +3,52 @@ import SwiftUI
 struct EmptyStateView: View {
     let lastUpdatedAt: Date?
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Label("No listening ports right now", systemImage: "circle.grid.2x2")
-                .font(.system(size: 12, weight: .medium))
+    @State private var isAnimating = false
 
-            Text("Start a local server and it will appear here automatically.")
-                .font(.system(size: 11, weight: .regular))
-                .foregroundStyle(.secondary)
+    var body: some View {
+        VStack(spacing: 16) {
+            // Animated illustration
+            ZStack {
+                Circle()
+                    .fill(.white.opacity(0.08))
+                    .frame(width: 64, height: 64)
+
+                Image(systemName: "circle.grid.2x2")
+                    .font(.system(size: 28, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .symbolRenderingMode(.hierarchical)
+                    .rotationEffect(.degrees(isAnimating ? 360 : 0))
+            }
+
+            VStack(spacing: 6) {
+                Text("No listening ports")
+                    .font(.system(size: 14, weight: .semibold))
+
+                Text("Start a local server and it will appear here automatically.")
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 240)
+            }
 
             if let lastUpdatedAt {
-                Text("Last scan \(lastUpdatedAt, style: .time)")
-                    .font(.system(size: 10, weight: .regular))
-                    .foregroundStyle(.tertiary)
+                HStack(spacing: 6) {
+                    Image(systemName: "clock")
+                        .font(.system(size: 10, weight: .medium))
+
+                    Text("Updated \(lastUpdatedAt, style: .time)")
+                        .font(.system(size: 11, weight: .regular))
+                }
+                .foregroundStyle(.tertiary)
+                .padding(.top, 4)
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 96, alignment: .leading)
-        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, minHeight: 120)
+        .padding(.vertical, 16)
+        .onAppear {
+            withAnimation(.linear(duration: 20).repeatForever(autoreverses: false)) {
+                isAnimating = true
+            }
+        }
     }
 }

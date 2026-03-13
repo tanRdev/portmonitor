@@ -7,7 +7,7 @@ final class StatusBarController: NSObject {
     private var panel: MenuBarPanel?
     private var eventMonitor: EventMonitor?
 
-    private let panelSize = NSSize(width: 332, height: 340)
+    private let panelSize = NSSize(width: 340, height: 360)
 
     override init() {
         super.init()
