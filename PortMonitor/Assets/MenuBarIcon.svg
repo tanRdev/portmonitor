@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 88">
+  <path
+    fill="#000"
+    fill-rule="evenodd"
+    d="M21 8h46c7.2 0 13 5.8 13 13v46c0 7.2-5.8 13-13 13H21C13.8 80 8 74.2 8 67V21C8 13.8 13.8 8 21 8zm8 19h30v17h-5v10h-6v7h-8v-7h-6V44h-5V27zm4 4v9h4v-9h-4zm8 0v9h4v-9h-4zm8 0v9h4v-9h-4zm8 0v9h2v-9h-2z"
+  />
+</svg>

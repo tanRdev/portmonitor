@@ -169,53 +169,6 @@ private actor SequencedCommandRunner: CommandRunning {
     }
 }
 
-@MainActor
-private final class StubScanner: PortScanning {
-    let portsSubject = PassthroughSubject<[PortInfo], Never>()
-    let errorSubject = PassthroughSubject<PortScannerError, Never>()
-    private let refreshError: PortScannerError?
-
-    private(set) var startCount = 0
-    private(set) var stopCount = 0
-    private(set) var refreshCount = 0
-
-    init(refreshError: PortScannerError? = nil) {
-        self.refreshError = refreshError
-    }
-
-    var portsPublisher: AnyPublisher<[PortInfo], Never> {
-        portsSubject.eraseToAnyPublisher()
-    }
-
-    var errorPublisher: AnyPublisher<PortScannerError, Never> {
-        errorSubject.eraseToAnyPublisher()
-    }
-
-    func startScanning() {
-        startCount += 1
-    }
-
-    func stopScanning() {
-        stopCount += 1
-    }
-
-    func refresh() async throws {
-        refreshCount += 1
-
-        if let refreshError {
-            throw refreshError
-        }
-    }
-
-    func emitPorts(_ ports: [PortInfo]) {
-        portsSubject.send(ports)
-    }
-
-    func emitError(_ error: PortScannerError) {
-        errorSubject.send(error)
-    }
-}
-
 private actor SpyKiller: ProcessKilling {
     private let error: Error?
 
@@ -224,6 +177,12 @@ private actor SpyKiller: ProcessKilling {
     }
 
     func kill(port: PortInfo) async throws {
+        if let error {
+            throw error
+        }
+    }
+
+    func forceKill(port: PortInfo) async throws {
         if let error {
             throw error
         }
@@ -238,6 +197,8 @@ private actor SuspendedKiller: ProcessKilling {
             self.continuation = continuation
         }
     }
+
+    func forceKill(port: PortInfo) async throws {}
 
     func resumeSuccessfully() {
         continuation?.resume()

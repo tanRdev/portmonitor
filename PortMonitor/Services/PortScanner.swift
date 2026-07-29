@@ -24,6 +24,7 @@ protocol PortScanning: AnyObject {
 
     func startScanning()
     func stopScanning()
+    func setUpdateInterval(_ interval: TimeInterval)
     func refresh() async throws
 }
 
@@ -32,7 +33,7 @@ final class PortScanner: ObservableObject, PortScanning {
     @Published private(set) var ports: [PortInfo] = []
 
     private var timer: Timer?
-    private let updateInterval: TimeInterval
+    private var updateInterval: TimeInterval
     private let commandRunner: any CommandRunning
     private let parser: LsofOutputParser
     private let errorSubject = PassthroughSubject<PortScannerError, Never>()
@@ -69,6 +70,15 @@ final class PortScanner: ObservableObject, PortScanning {
     func stopScanning() {
         timer?.invalidate()
         timer = nil
+    }
+
+    func setUpdateInterval(_ interval: TimeInterval) {
+        updateInterval = interval
+
+        // Restart the timer so the new interval takes effect immediately.
+        if timer != nil {
+            startScanning()
+        }
     }
 
     func refresh() async throws {

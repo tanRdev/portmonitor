@@ -35,8 +35,8 @@ ln -s /Applications "$MOUNT_DIR/Applications"
 
 # Copy DMG background artwork if present
 mkdir -p "$MOUNT_DIR/.background"
-if [ -f "assets/icons/port-grid/port-grid-512.png" ]; then
-    cp "assets/icons/port-grid/port-grid-512.png" "$MOUNT_DIR/.background/background.png"
+if [ -f "assets/app-icon-source.png" ]; then
+    cp "assets/app-icon-source.png" "$MOUNT_DIR/.background/background.png"
 fi
 
 # Set window properties using AppleScript (best effort)

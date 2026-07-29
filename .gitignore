@@ -7,3 +7,4 @@ icon-design.pen
 skills-lock.json
 DerivedData/
 *.dSYM
+.todos/

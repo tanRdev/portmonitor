@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="./assets/icons/port-grid/port-grid-readme.svg" alt="Port Monitor logo" width="96" />
+  <img src="./assets/app-icon-source.svg" alt="Port Monitor logo" width="96" />
 
   # Port Monitor
 

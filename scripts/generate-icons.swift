@@ -2,32 +2,25 @@
 
 import Cocoa
 
+let sourcePath = "assets/app-icon-source.png"
+
+guard let sourceImage = NSImage(contentsOfFile: sourcePath) else {
+    fputs("Unable to load authoritative icon source at \(sourcePath)\n", stderr)
+    exit(1)
+}
+
 func generateIcon(size: Int, scale: Int = 1) -> NSImage {
     let pixelSize = size * scale
     let image = NSImage(size: NSSize(width: pixelSize, height: pixelSize))
 
     image.lockFocus()
-
-    // White background
-    NSColor.white.setFill()
-    NSRect(x: 0, y: 0, width: pixelSize, height: pixelSize).fill()
-
-    // Draw network symbol in black
-    let config = NSImage.SymbolConfiguration(pointSize: CGFloat(pixelSize) * 0.5, weight: .regular)
-    if let symbol = NSImage(systemSymbolName: "network", accessibilityDescription: nil)?.withSymbolConfiguration(config) {
-        let symbolSize = symbol.size
-        let symbolRect = NSRect(
-            x: (CGFloat(pixelSize) - symbolSize.width) / 2,
-            y: (CGFloat(pixelSize) - symbolSize.height) / 2,
-            width: symbolSize.width,
-            height: symbolSize.height
-        )
-
-        // Draw in black
-        NSColor.black.set()
-        symbol.draw(in: symbolRect)
-    }
-
+    NSGraphicsContext.current?.imageInterpolation = .high
+    sourceImage.draw(
+        in: NSRect(x: 0, y: 0, width: pixelSize, height: pixelSize),
+        from: .zero,
+        operation: .copy,
+        fraction: 1
+    )
     image.unlockFocus()
 
     return image

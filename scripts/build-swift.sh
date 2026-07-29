@@ -1,98 +1,129 @@
 #!/bin/bash
-set -euo pipefail
+set -e
 
-PROJECT_NAME="PortMonitor"
+cd "$(dirname "$0")/.."
+
+APP_NAME="PortMonitor"
 BUILD_DIR="build"
-APP_PATH="$BUILD_DIR/$PROJECT_NAME.app"
-CONTENTS_PATH="$APP_PATH/Contents"
-MACOS_PATH="$CONTENTS_PATH/MacOS"
-RESOURCES_PATH="$CONTENTS_PATH/Resources"
-ARM64_BUILD_PATH="$BUILD_DIR/swiftpm-arm64"
-X86_64_BUILD_PATH="$BUILD_DIR/swiftpm-x86_64"
-VERSION=${VERSION:-${GITHUB_REF_NAME:-1.0.0}}
+SPM_BUILD=".build/release"
 
-if [[ "$VERSION" == v* ]]; then
-    VERSION="${VERSION#v}"
+echo "Building $APP_NAME..."
+
+# Build release
+swift build -c release
+
+# Create app bundle
+echo "Creating app bundle..."
+rm -rf "$BUILD_DIR"
+mkdir -p "$BUILD_DIR/$APP_NAME.app/Contents/MacOS"
+mkdir -p "$BUILD_DIR/$APP_NAME.app/Contents/Resources"
+
+# Copy binary
+cp "$SPM_BUILD/$APP_NAME" "$BUILD_DIR/$APP_NAME.app/Contents/MacOS/"
+
+# Copy resource bundle when SwiftPM emits one.
+if [ -d "$SPM_BUILD/PortMonitor_PortMonitor.resources" ]; then
+    cp -R "$SPM_BUILD/PortMonitor_PortMonitor.resources" "$BUILD_DIR/$APP_NAME.app/Contents/Resources/"
+    cp "$SPM_BUILD/PortMonitor_PortMonitor.resources/MenuBarIcon.png" "$BUILD_DIR/$APP_NAME.app/Contents/Resources/" 2>/dev/null || true
 fi
 
-echo "Building $PROJECT_NAME..."
-
-# Clean previous builds
-rm -rf "$BUILD_DIR"
-mkdir -p "$MACOS_PATH" "$RESOURCES_PATH"
-
-# Build separate binaries for Apple Silicon and Intel, then merge them
-swift build -c release --arch arm64 --build-path "$ARM64_BUILD_PATH" -j 2
-swift build -c release --arch x86_64 --build-path "$X86_64_BUILD_PATH" -j 2
-
-ARM64_BIN_PATH=$(swift build -c release --arch arm64 --build-path "$ARM64_BUILD_PATH" --show-bin-path)
-X86_64_BIN_PATH=$(swift build -c release --arch x86_64 --build-path "$X86_64_BUILD_PATH" --show-bin-path)
-
-# Create a universal executable
-lipo -create \
-    "$ARM64_BIN_PATH/$PROJECT_NAME" \
-    "$X86_64_BIN_PATH/$PROJECT_NAME" \
-    -output "$MACOS_PATH/$PROJECT_NAME"
+# The executable target excludes its asset catalog, so install the menu-bar
+# template image directly into the application bundle.
+if [ -f "PortMonitor/Assets/MenuBarIcon.png" ]; then
+    cp "PortMonitor/Assets/MenuBarIcon.png" "$BUILD_DIR/$APP_NAME.app/Contents/Resources/MenuBarIcon.png"
+fi
 
 # Create Info.plist
-cat > "$CONTENTS_PATH/Info.plist" << EOF
+cat > "$BUILD_DIR/$APP_NAME.app/Contents/Info.plist" << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>LSUIElement</key>
-    <true/>
-    <key>CFBundleName</key>
-    <string>Port Monitor</string>
-    <key>CFBundleDisplayName</key>
-    <string>Port Monitor</string>
-    <key>CFBundleIdentifier</key>
-    <string>com.portmonitor.app</string>
-    <key>CFBundleIconFile</key>
-    <string>AppIcon</string>
-    <key>CFBundleVersion</key>
-    <string>$VERSION</string>
-    <key>CFBundleShortVersionString</key>
-    <string>$VERSION</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
     <key>CFBundleExecutable</key>
     <string>PortMonitor</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundleIdentifier</key>
+    <string>us.hanagata.portmonitor</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>Port Monitor</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.1.0</string>
+    <key>CFBundleVersion</key>
+    <string>4</string>
     <key>LSMinimumSystemVersion</key>
     <string>26.0</string>
+    <key>LSUIElement</key>
+    <true/>
     <key>NSHighResolutionCapable</key>
     <true/>
 </dict>
 </plist>
 EOF
 
-# Copy runtime resources
-if [ -f "assets/icons/port-grid/port-grid-tray-44.png" ]; then
-    cp "assets/icons/port-grid/port-grid-tray-44.png" "$RESOURCES_PATH/MenuBarIcon.png"
-elif [ -f "PortMonitor/Assets/MenuBarIcon.png" ]; then
-    cp "PortMonitor/Assets/MenuBarIcon.png" "$RESOURCES_PATH/MenuBarIcon.png"
-fi
-
-# Build and attach app icon
-ICONSET_DIR="$BUILD_DIR/AppIcon.iconset"
-mkdir -p "$ICONSET_DIR"
-cp "assets/icons/port-grid/port-grid-16.png" "$ICONSET_DIR/icon_16x16.png"
-cp "assets/icons/port-grid/port-grid-32.png" "$ICONSET_DIR/icon_16x16@2x.png"
-cp "assets/icons/port-grid/port-grid-32.png" "$ICONSET_DIR/icon_32x32.png"
-cp "assets/icons/port-grid/port-grid-64.png" "$ICONSET_DIR/icon_32x32@2x.png"
-cp "assets/icons/port-grid/port-grid-128.png" "$ICONSET_DIR/icon_128x128.png"
-cp "assets/icons/port-grid/port-grid-256.png" "$ICONSET_DIR/icon_128x128@2x.png"
-cp "assets/icons/port-grid/port-grid-256.png" "$ICONSET_DIR/icon_256x256.png"
-cp "assets/icons/port-grid/port-grid-512.png" "$ICONSET_DIR/icon_256x256@2x.png"
-cp "assets/icons/port-grid/port-grid-512.png" "$ICONSET_DIR/icon_512x512.png"
-cp "assets/icons/port-grid/port-grid-1024.png" "$ICONSET_DIR/icon_512x512@2x.png"
-iconutil --convert icns "$ICONSET_DIR" --output "$RESOURCES_PATH/AppIcon.icns"
-
-cat > "$CONTENTS_PATH/PkgInfo" << 'EOF'
-APPL????
+# Create entitlements file for ad-hoc signing
+ENTITLEMENTS_PATH="$BUILD_DIR/entitlements.plist"
+cat > "$ENTITLEMENTS_PATH" << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>com.apple.security.get-task-allow</key>
+    <true/>
+</dict>
+</plist>
 EOF
 
-echo "Build complete: $APP_PATH"
+# Convert app icon (PNG -> icns)
+ICONSET_DIR="$BUILD_DIR/AppIcon.iconset"
+mkdir -p "$ICONSET_DIR"
+
+SOURCE_ICON="assets/app-icon-source.png"
+if [ -f "$SOURCE_ICON" ]; then
+    echo "Generating app icon..."
+
+    # iconutil requires exact dimensions
+    sips -z 16 16     "$SOURCE_ICON" --out "$ICONSET_DIR/icon_16x16.png" > /dev/null
+    sips -z 32 32     "$SOURCE_ICON" --out "$ICONSET_DIR/icon_16x16@2x.png" > /dev/null
+    sips -z 32 32     "$SOURCE_ICON" --out "$ICONSET_DIR/icon_32x32.png" > /dev/null
+    sips -z 64 64     "$SOURCE_ICON" --out "$ICONSET_DIR/icon_32x32@2x.png" > /dev/null
+    sips -z 128 128   "$SOURCE_ICON" --out "$ICONSET_DIR/icon_128x128.png" > /dev/null
+    sips -z 256 256   "$SOURCE_ICON" --out "$ICONSET_DIR/icon_128x128@2x.png" > /dev/null
+    sips -z 256 256   "$SOURCE_ICON" --out "$ICONSET_DIR/icon_256x256.png" > /dev/null
+    sips -z 512 512   "$SOURCE_ICON" --out "$ICONSET_DIR/icon_256x256@2x.png" > /dev/null
+    sips -z 512 512   "$SOURCE_ICON" --out "$ICONSET_DIR/icon_512x512.png" > /dev/null
+    sips -z 1024 1024 "$SOURCE_ICON" --out "$ICONSET_DIR/icon_512x512@2x.png" > /dev/null
+
+    if iconutil -c icns "$ICONSET_DIR" -o "$BUILD_DIR/$APP_NAME.app/Contents/Resources/AppIcon.icns"; then
+        echo "  AppIcon.icns generated from $SOURCE_ICON"
+    else
+        echo "  iconutil failed; falling back to plain PNG"
+        cp "$SOURCE_ICON" "$BUILD_DIR/$APP_NAME.app/Contents/Resources/AppIcon.icns"
+    fi
+
+    rm -rf "$ICONSET_DIR"
+elif [ -f "assets/AppIcon.icns" ]; then
+    cp "assets/AppIcon.icns" "$BUILD_DIR/$APP_NAME.app/Contents/Resources/"
+    echo "  AppIcon.icns: installed"
+fi
+
+# Code sign (ad-hoc for local builds)
+# Must run AFTER all bundle contents are final — any file written into the
+# bundle after signing breaks the seal and launchd will kill the app on open.
+codesign --force --sign - \
+    --entitlements "$ENTITLEMENTS_PATH" \
+    "$BUILD_DIR/$APP_NAME.app/Contents/MacOS/$APP_NAME" 2>/dev/null || true
+
+codesign --force --sign - "$BUILD_DIR/$APP_NAME.app" 2>/dev/null || true
+
 echo ""
-echo "To run:"
-echo "  open '$APP_PATH'"
+echo "✅ Built: $BUILD_DIR/$APP_NAME.app"
+echo ""
+echo "To install:"
+echo "  cp -R $BUILD_DIR/$APP_NAME.app /Applications/"

@@ -8,6 +8,7 @@ enum KillError: Error, Equatable, Sendable {
 
 protocol ProcessKilling: Sendable {
     func kill(port: PortInfo) async throws
+    func forceKill(port: PortInfo) async throws
 }
 
 struct ProcessKiller: ProcessKilling, Sendable {
@@ -31,6 +32,10 @@ struct ProcessKiller: ProcessKilling, Sendable {
 
     func kill(port: PortInfo) async throws {
         try await kill(pid: port.pid)
+    }
+
+    func forceKill(port: PortInfo) async throws {
+        try await send(signal: "-KILL", pid: port.pid)
     }
 
     private func send(signal: String, pid: Int) async throws {
