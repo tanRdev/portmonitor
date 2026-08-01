@@ -95,3 +95,7 @@ PortMonitor/
 - The app is a menu-bar-only macOS app via `LSUIElement`.
 - CI validates pushes and pull requests, and release automation publishes a DMG from GitHub Actions when a `v*` tag is pushed.
 - The packaged app is built as a universal binary for Apple Silicon and Intel Macs.
+
+## License
+
+[MIT License](LICENSE)
