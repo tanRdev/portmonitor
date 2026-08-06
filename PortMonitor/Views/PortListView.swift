@@ -131,12 +131,9 @@ struct PortListView: View {
                 ForEach(viewModel.visiblePorts) { port in
                     PortRowView(
                         port: port,
-                        isKilling: viewModel.killingPortId == port.id
+                        isKilling: viewModel.killingPortId == port.id,
+                        onKill: { Task { await viewModel.killPort(port) } }
                     )
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        Task { await viewModel.killPort(port) }
-                    }
                 }
             }
             .padding(.horizontal, 12)

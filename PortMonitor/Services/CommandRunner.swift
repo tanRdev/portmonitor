@@ -65,19 +65,23 @@ struct ProcessCommandRunner: CommandRunning {
         process.standardError = stderrPipe
         terminationObserver.attach(to: process)
 
-        async let stdoutData = readAll(from: stdoutPipe.fileHandleForReading)
-        async let stderrData = readAll(from: stderrPipe.fileHandleForReading)
-
+        // Start the process before any structured-concurrency work so a
+        // spawn failure cannot leave pipe readers behind.
         do {
             try process.run()
         } catch {
             stdoutPipe.fileHandleForWriting.closeFile()
             stderrPipe.fileHandleForWriting.closeFile()
+            stdoutPipe.fileHandleForReading.closeFile()
+            stderrPipe.fileHandleForReading.closeFile()
             throw error
         }
 
+        async let stdoutData = readAll(from: stdoutPipe.fileHandleForReading)
+        async let stderrData = readAll(from: stderrPipe.fileHandleForReading)
+
         let terminationStatus = await terminationObserver.waitForExit()
-        let (finalStdout, finalStderr) = try await (stdoutData, stderrData)
+        let (finalStdout, finalStderr) = await (stdoutData, stderrData)
 
         return CommandResult(
             stdout: String(data: finalStdout, encoding: .utf8) ?? "",
@@ -86,13 +90,27 @@ struct ProcessCommandRunner: CommandRunning {
         )
     }
 
-    private func readAll(from handle: FileHandle) async throws -> Data {
-        var data = Data()
+    /// Reads the pipe in 64 KB chunks on a background executor instead of
+    /// byte-at-a-time through `FileHandle.AsyncBytes`.
+    private func readAll(from handle: FileHandle) async -> Data {
+        let fileDescriptor = handle.fileDescriptor
 
-        for try await byte in handle.bytes {
-            data.append(byte)
-        }
+        return await Task.detached(priority: .utility) {
+            var data = Data()
+            var buffer = [UInt8](repeating: 0, count: 64 * 1024)
 
-        return data
+            while true {
+                let count = buffer.withUnsafeMutableBytes { pointer in
+                    Darwin.read(fileDescriptor, pointer.baseAddress, pointer.count)
+                }
+
+                // 0 is EOF; a negative count is a read error, treated as
+                // end-of-stream to match the previous best-effort behavior.
+                guard count > 0 else { break }
+                data.append(contentsOf: buffer[..<count])
+            }
+
+            return data
+        }.value
     }
 }

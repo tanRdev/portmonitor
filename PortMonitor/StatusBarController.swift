@@ -7,6 +7,7 @@ final class StatusBarController: NSObject {
     private var statusItem: NSStatusItem?
     private var panel: MenuBarPanel?
     private var eventMonitor: EventMonitor?
+    private var pendingPositioningItem: DispatchWorkItem?
     private let panelSize = NSSize(width: 340, height: 400)
     private let viewModel = PortListViewModel()
     private let maximumPositioningAttempts = 20
@@ -83,6 +84,12 @@ final class StatusBarController: NSObject {
     }
 
     private func showPopover(relativeTo button: NSButton, positioningAttempt: Int = 0) {
+        // A fresh show request replaces any pending retry so rapid clicks
+        // cannot stack concurrent positioning chains.
+        if positioningAttempt == 0 {
+            cancelPendingPositioning()
+        }
+
         guard let panel, let buttonWindow = button.window else { return }
 
         let buttonFrameInWindow = button.convert(button.bounds, to: nil)
@@ -95,10 +102,15 @@ final class StatusBarController: NSObject {
             visibleFrame: screen.visibleFrame
         ) else {
             guard positioningAttempt < maximumPositioningAttempts else { return }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self, weak button] in
-                guard let self, let button else { return }
-                self.showPopover(relativeTo: button, positioningAttempt: positioningAttempt + 1)
+            let item = DispatchWorkItem { [weak self, weak button] in
+                MainActor.assumeIsolated {
+                    guard let self, let button else { return }
+                    self.pendingPositioningItem = nil
+                    self.showPopover(relativeTo: button, positioningAttempt: positioningAttempt + 1)
+                }
             }
+            pendingPositioningItem = item
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: item)
             return
         }
 
@@ -116,8 +128,14 @@ final class StatusBarController: NSObject {
     }
 
     private func closePopover() {
+        cancelPendingPositioning()
         viewModel.stopScanning()
         panel?.orderOut(nil)
+    }
+
+    private func cancelPendingPositioning() {
+        pendingPositioningItem?.cancel()
+        pendingPositioningItem = nil
     }
 
     // MARK: - Right-click status menu

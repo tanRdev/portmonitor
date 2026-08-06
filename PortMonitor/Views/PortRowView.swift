@@ -3,7 +3,9 @@ import SwiftUI
 struct PortRowView: View {
     let port: PortInfo
     let isKilling: Bool
+    var onKill: () -> Void = {}
     @State private var isHovered = false
+    @State private var isKillArmed = false
 
     var body: some View {
         HStack(spacing: 10) {
@@ -38,10 +40,10 @@ struct PortRowView: View {
                 if isKilling {
                     StoppingBadge()
                 } else {
-                    KillButton(port: port)
+                    KillButton(port: port, isArmed: $isKillArmed, action: onKill)
                 }
             }
-            .opacity(isKilling || isHovered ? 1 : 0)
+            .opacity(isKilling || isHovered || isKillArmed ? 1 : 0)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 7)
@@ -75,20 +77,43 @@ struct PortRowView: View {
     }
 }
 
+/// Real button with an isolated tap target and a two-step confirmation:
+/// the first click arms the button, the second click (within a short window)
+/// actually sends SIGTERM. A stray click elsewhere disarms it on its own.
 private struct KillButton: View {
     let port: PortInfo
+    @Binding var isArmed: Bool
+    let action: () -> Void
 
     var body: some View {
-        Text("Kill")
-            .font(.system(size: 10, weight: .semibold))
-            .foregroundStyle(.white)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(
-                RoundedRectangle(cornerRadius: 5, style: .continuous)
-                    .fill(Color.red.opacity(0.85))
-            )
-            .accessibilityLabel("Kill \(port.processName) on port \(port.port)")
+        Button {
+            if isArmed {
+                isArmed = false
+                action()
+            } else {
+                isArmed = true
+            }
+        } label: {
+            Text(isArmed ? "Confirm" : "Kill")
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(.white)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(
+                    RoundedRectangle(cornerRadius: 5, style: .continuous)
+                        .fill(isArmed ? Color.red : Color.red.opacity(0.85))
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(isArmed
+            ? "Confirm kill \(port.processName) on port \(port.port)"
+            : "Kill \(port.processName) on port \(port.port)")
+        .task(id: isArmed) {
+            guard isArmed else { return }
+            try? await Task.sleep(for: .seconds(3))
+            guard !Task.isCancelled else { return }
+            isArmed = false
+        }
     }
 }
 

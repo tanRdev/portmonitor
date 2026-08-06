@@ -141,16 +141,22 @@ final class PortListViewModel: ObservableObject {
 
         do {
             try await killer.kill(port: port)
-            try await scanner.refresh()
         } catch let error as KillError {
             errorMessage = message(for: error)
             failedKillPort = offersForceKill(for: error) ? port : nil
-        } catch let error as PortScannerError {
-            errorMessage = error.userMessage
+            killingPortId = nil
+            return
         } catch {
             errorMessage = "Failed to kill process: \(error.localizedDescription)"
             failedKillPort = port
+            killingPortId = nil
+            return
         }
+
+        // The kill succeeded, so a refresh failure here is a scan problem:
+        // never report it as a kill failure or offer Force Kill for a
+        // process that was already signaled.
+        await refreshAfterKill()
 
         killingPortId = nil
     }
@@ -163,18 +169,32 @@ final class PortListViewModel: ObservableObject {
 
         do {
             try await killer.forceKill(port: port)
-            failedKillPort = nil
-            try await scanner.refresh()
         } catch let error as KillError {
             errorMessage = message(for: error)
-        } catch let error as PortScannerError {
-            failedKillPort = nil
-            errorMessage = error.userMessage
+            killingPortId = nil
+            return
         } catch {
             errorMessage = "Failed to kill process: \(error.localizedDescription)"
+            killingPortId = nil
+            return
         }
 
+        failedKillPort = nil
+        await refreshAfterKill()
+
         killingPortId = nil
+    }
+
+    /// Post-kill refresh. Errors are reported as scan errors, mirroring
+    /// `refreshNow`, and never touch the kill failure state.
+    private func refreshAfterKill() async {
+        do {
+            try await scanner.refresh()
+        } catch let error as PortScannerError {
+            errorMessage = error.userMessage
+        } catch {
+            errorMessage = "Unable to scan ports: \(error.localizedDescription)"
+        }
     }
 
     func setSortOrder(_ order: PortSortOrder) {
@@ -192,9 +212,12 @@ final class PortListViewModel: ObservableObject {
         terminateApp()
     }
 
+    /// Force Kill is the explicit escalation path: it is only offered after
+    /// a plain SIGTERM failed for an unknown reason. Policy refusals and
+    /// identity changes are never escalated automatically.
     private func offersForceKill(for error: KillError) -> Bool {
         switch error {
-        case .processNotFound, .permissionDenied:
+        case .processNotFound, .permissionDenied, .processIdentityChanged, .policyRefused:
             return false
         case .killFailed:
             return true
@@ -207,6 +230,10 @@ final class PortListViewModel: ObservableObject {
             return "Process already terminated"
         case .permissionDenied:
             return "Permission denied to terminate this process"
+        case let .processIdentityChanged(expected, found):
+            return "PID now belongs to \(found), not \(expected). Refresh and try again."
+        case let .policyRefused(reason):
+            return reason
         case let .killFailed(message):
             return "Failed to kill process: \(message)"
         }

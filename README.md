@@ -85,13 +85,14 @@ PortMonitor/
 ├── PortMonitor/              # App entry point, UI, services, models
 ├── Tests/PortMonitorTests/   # Parsing, command runner, view model tests
 ├── scripts/                  # Build, packaging, and icon tooling
-├── assets/icons/             # Source artwork and exported icons
+├── assets/                   # Source artwork for app and menu bar icons
 ├── Package.swift             # Swift Package Manager setup
 └── project.yml               # XcodeGen project definition
 ```
 
 ## Development notes
 
+- `PortMonitor.xcodeproj` is generated from `project.yml` with [XcodeGen](https://github.com/yonsm/XcodeGen). Run `xcodegen` after changing `project.yml`; tests and release builds use SwiftPM (`swift test`, `scripts/build.sh`) and do not need the Xcode project.
 - The app is a menu-bar-only macOS app via `LSUIElement`.
 - CI validates pushes and pull requests, and release automation publishes a DMG from GitHub Actions when a `v*` tag is pushed.
 - The packaged app is built as a universal binary for Apple Silicon and Intel Macs.

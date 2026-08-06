@@ -219,7 +219,7 @@ struct PortListViewModelBehaviorTests {
 final class StubScanner: PortScanning {
     let portsSubject = PassthroughSubject<[PortInfo], Never>()
     let errorSubject = PassthroughSubject<PortScannerError, Never>()
-    private let refreshError: PortScannerError?
+    private let refreshError: (any Error)?
 
     private(set) var startCount = 0
     private(set) var stopCount = 0
@@ -228,6 +228,11 @@ final class StubScanner: PortScanning {
 
     init(refreshError: PortScannerError? = nil) {
         self.refreshError = refreshError
+    }
+
+    /// For simulating refresh failures that are not `PortScannerError`s.
+    init(untypedRefreshError: any Error) {
+        self.refreshError = untypedRefreshError
     }
 
     var portsPublisher: AnyPublisher<[PortInfo], Never> {

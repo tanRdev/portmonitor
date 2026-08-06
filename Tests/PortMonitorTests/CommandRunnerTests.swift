@@ -44,4 +44,30 @@ struct CommandRunnerTests {
         #expect(result.stderr == "bd")
         #expect(result.terminationStatus == 0)
     }
+
+    @Test
+    func processCommandRunnerCapturesLargeOutputAcrossManyChunks() async throws {
+        let runner = ProcessCommandRunner()
+        let line = "abcdefghij\n"
+        let lineCount = 200_000
+
+        let result = try await runner.run(
+            launchPath: "/bin/sh",
+            arguments: ["-c", "yes abcdefghij | head -n \(lineCount)"]
+        )
+
+        #expect(result.terminationStatus == 0)
+        #expect(result.stdout.count == line.count * lineCount)
+        #expect(result.stdout.hasPrefix("abcdefghij\n"))
+        #expect(result.stdout.hasSuffix("abcdefghij\n"))
+    }
+
+    @Test
+    func processCommandRunnerThrowsPromptlyWhenExecutableIsMissing() async throws {
+        let runner = ProcessCommandRunner()
+
+        await #expect(throws: (any Error).self) {
+            try await runner.run(launchPath: "/definitely/not/a/real/binary", arguments: [])
+        }
+    }
 }

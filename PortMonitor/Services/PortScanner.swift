@@ -34,6 +34,7 @@ final class PortScanner: ObservableObject, PortScanning {
 
     private var timer: Timer?
     private var updateInterval: TimeInterval
+    private var isScanInFlight = false
     private let commandRunner: any CommandRunning
     private let parser: LsofOutputParser
     private let errorSubject = PassthroughSubject<PortScannerError, Never>()
@@ -81,7 +82,9 @@ final class PortScanner: ObservableObject, PortScanning {
         }
     }
 
-    func refresh() async throws {
+    /// Runs lsof and parses its output off the main actor; only publishing
+    /// the parsed ports hops back to the main actor.
+    nonisolated func refresh() async throws {
         let result = try await commandRunner.run(
             launchPath: "/usr/sbin/lsof",
             arguments: ["-nP", "-iTCP", "-sTCP:LISTEN", "-FpcnT"]
@@ -90,7 +93,7 @@ final class PortScanner: ObservableObject, PortScanning {
         if result.terminationStatus == 1,
            result.stdout.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
            result.stderr.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            ports = []
+            await publishPorts([])
             return
         }
 
@@ -98,17 +101,30 @@ final class PortScanner: ObservableObject, PortScanning {
             throw PortScannerError.commandFailed(status: result.terminationStatus, message: result.stderr)
         }
 
-        ports = parser.parse(result.stdout)
+        await publishPorts(parser.parse(result.stdout))
     }
 
+    @MainActor
+    private func publishPorts(_ newPorts: [PortInfo]) {
+        ports = newPorts
+    }
+
+    /// Timer ticks while a scan is still running are dropped instead of
+    /// stacking overlapping lsof invocations.
     private func refreshIgnoringErrors() {
-        Task { @MainActor in
+        guard !isScanInFlight else { return }
+        isScanInFlight = true
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            defer { self.isScanInFlight = false }
+
             do {
-                try await refresh()
+                try await self.refresh()
             } catch let error as PortScannerError {
-                errorSubject.send(error)
+                self.errorSubject.send(error)
             } catch {
-                errorSubject.send(.commandFailed(status: -1, message: error.localizedDescription))
+                self.errorSubject.send(.commandFailed(status: -1, message: error.localizedDescription))
             }
         }
     }

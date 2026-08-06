@@ -6,50 +6,6 @@ import Testing
 @MainActor
 struct ProcessKillerAndViewModelTests {
     @Test
-    func processKillerFallsBackToSIGKILLAfterGenericSIGTERMFailure() async throws {
-        let runner = SequencedCommandRunner(results: [
-            .success(CommandResult(stdout: "", stderr: "temporary failure", terminationStatus: 1)),
-            .success(CommandResult(stdout: "", stderr: "", terminationStatus: 0))
-        ])
-        let killer = ProcessKiller(commandRunner: runner)
-
-        try await killer.kill(pid: 4321)
-
-        #expect(await runner.calls == [
-            CommandCall(launchPath: "/bin/kill", arguments: ["-TERM", "4321"]),
-            CommandCall(launchPath: "/bin/kill", arguments: ["-KILL", "4321"])
-        ])
-    }
-
-    @Test
-    func processKillerMapsPermissionDeniedWithoutFallback() async {
-        let runner = SequencedCommandRunner(results: [
-            .success(CommandResult(stdout: "", stderr: "kill: 999: Operation not permitted", terminationStatus: 1))
-        ])
-        let killer = ProcessKiller(commandRunner: runner)
-
-        await #expect(throws: KillError.permissionDenied) {
-            try await killer.kill(pid: 999)
-        }
-
-        #expect(await runner.calls == [
-            CommandCall(launchPath: "/bin/kill", arguments: ["-TERM", "999"])
-        ])
-    }
-
-    @Test
-    func processKillerMapsMissingProcessWithoutFallback() async {
-        let runner = SequencedCommandRunner(results: [
-            .success(CommandResult(stdout: "", stderr: "kill: 123: No such process", terminationStatus: 1))
-        ])
-        let killer = ProcessKiller(commandRunner: runner)
-
-        await #expect(throws: KillError.processNotFound) {
-            try await killer.kill(pid: 123)
-        }
-    }
-
-    @Test
     func viewModelStartsScanningAndClearsLoadingWhenPortsArrive() {
         let scanner = StubScanner()
         let killer = SpyKiller()
@@ -118,9 +74,46 @@ struct ProcessKillerAndViewModelTests {
         #expect(viewModel.errorMessage == "Unable to scan ports: refresh failed")
     }
 
+    @Test
+    func viewModelNeverMasksSuccessfulKillAsFailureWhenRefreshThrowsUnexpectedError() async {
+        struct UnexpectedRefreshError: Error {}
+
+        let scanner = StubScanner(untypedRefreshError: UnexpectedRefreshError())
+        let killer = SpyKiller()
+        let viewModel = PortListViewModel(scanner: scanner, killer: killer, terminateApp: {})
+        let port = PortInfo(port: 5173, processName: "vite", pid: 202, protocolType: "TCP")
+
+        await viewModel.killPort(port)
+
+        #expect(viewModel.killingPortId == nil)
+        #expect(viewModel.failedKillPort == nil)
+        #expect(viewModel.errorMessage?.hasPrefix("Failed to kill process") == false)
+    }
+
+    @Test
+    func viewModelClearsFailedKillWhenForceKillSucceedsButRefreshThrowsUnexpectedError() async {
+        struct UnexpectedRefreshError: Error {}
+
+        let scanner = StubScanner(untypedRefreshError: UnexpectedRefreshError())
+        let killer = RecordingKiller(killError: KillError.killFailed("boom"))
+        let viewModel = PortListViewModel(scanner: scanner, killer: killer, terminateApp: {})
+        let port = PortInfo(port: 5173, processName: "vite", pid: 202, protocolType: "TCP")
+
+        await viewModel.killPort(port)
+        #expect(viewModel.failedKillPort == port)
+
+        await viewModel.forceKillFailedPort()
+
+        #expect(viewModel.failedKillPort == nil)
+        #expect(viewModel.errorMessage?.hasPrefix("Failed to kill process") == false)
+    }
+
     @Test(arguments: [
         (KillError.processNotFound, "Process already terminated"),
         (KillError.permissionDenied, "Permission denied to terminate this process"),
+        (KillError.processIdentityChanged(expected: "node", found: "Code"),
+         "PID now belongs to Code, not node. Refresh and try again."),
+        (KillError.policyRefused("owned by another user"), "owned by another user"),
         (KillError.killFailed("boom"), "Failed to kill process: boom")
     ])
     func viewModelMapsKillFailuresToMessages(error: KillError, message: String) async {
@@ -135,6 +128,35 @@ struct ProcessKillerAndViewModelTests {
         #expect(viewModel.errorMessage == message)
     }
 
+    @Test(arguments: [
+        KillError.processNotFound,
+        KillError.permissionDenied,
+        KillError.processIdentityChanged(expected: "node", found: "Code"),
+        KillError.policyRefused("owned by another user")
+    ])
+    func viewModelNeverOffersForceKillForPolicyOrIdentityFailures(error: KillError) async {
+        let scanner = StubScanner()
+        let killer = SpyKiller(error: error)
+        let viewModel = PortListViewModel(scanner: scanner, killer: killer, terminateApp: {})
+        let port = PortInfo(port: 8080, processName: "server", pid: 303, protocolType: "TCP")
+
+        await viewModel.killPort(port)
+
+        #expect(viewModel.failedKillPort == nil)
+    }
+
+    @Test
+    func viewModelOffersExplicitForceKillAfterGenericKillFailure() async {
+        let scanner = StubScanner()
+        let killer = SpyKiller(error: KillError.killFailed("Input/output error"))
+        let viewModel = PortListViewModel(scanner: scanner, killer: killer, terminateApp: {})
+        let port = PortInfo(port: 8080, processName: "server", pid: 303, protocolType: "TCP")
+
+        await viewModel.killPort(port)
+
+        #expect(viewModel.failedKillPort == port)
+    }
+
     @Test
     func viewModelQuitAppInvokesInjectedTerminator() {
         let scanner = StubScanner()
@@ -147,25 +169,6 @@ struct ProcessKillerAndViewModelTests {
         viewModel.quitApp()
 
         #expect(quitCount == 1)
-    }
-}
-
-private struct CommandCall: Equatable, Sendable {
-    let launchPath: String
-    let arguments: [String]
-}
-
-private actor SequencedCommandRunner: CommandRunning {
-    private var results: [Result<CommandResult, Error>]
-    private(set) var calls: [CommandCall] = []
-
-    init(results: [Result<CommandResult, Error>]) {
-        self.results = results
-    }
-
-    func run(launchPath: String, arguments: [String]) async throws -> CommandResult {
-        calls.append(CommandCall(launchPath: launchPath, arguments: arguments))
-        return try results.removeFirst().get()
     }
 }
 

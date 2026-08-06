@@ -9,19 +9,12 @@ targets:
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.portmonitor.app
       PRODUCT_NAME: Port Monitor
-      GENERATE_INFOPLIST_FILE: YES
+      # The checked-in Info.plist is the single source of truth for bundle id
+      # and version; scripts/build-swift.sh reads/stamps the same file.
+      GENERATE_INFOPLIST_FILE: NO
       INFOPLIST_FILE: PortMonitor/Info.plist
       CODE_SIGN_IDENTITY: "-"
       CODE_SIGNING_REQUIRED: NO
       CODE_SIGNING_ALLOWED: NO
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
       ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: ""
-    info:
-      path: PortMonitor/Info.plist
-      properties:
-        LSUIElement: true
-        CFBundleName: Port Monitor
-        CFBundleDisplayName: Port Monitor
-        CFBundleIdentifier: com.portmonitor.app
-        CFBundleVersion: 1.0.0
-        CFBundleShortVersionString: 1.0.0
